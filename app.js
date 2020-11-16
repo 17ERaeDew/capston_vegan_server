@@ -5,15 +5,15 @@ var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
 var path        = require('path');
 
-// // MongoDB
-// var db = mongoose.connection;
-// db.on('error', console.error);
-// db.once('open', function(){
-//     // CONNECTED TO MONGODB SERVER
-//     console.log("Connected to mongod server");
-// });
+// MongoDB
+var db = mongoose.connection;
+db.on('error', console.error);
+db.once('open', function(){
+    // CONNECTED TO MONGODB SERVER
+    console.log("Connected to mongod server");
+});
 
-// mongoose.connect('mongodb://localhost/mongo_exam', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost/mongo_exam', {useNewUrlParser: true});
 
 // Model
 var examModel = require('./models/exam');
