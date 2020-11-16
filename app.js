@@ -35,6 +35,6 @@ require('./routes/delete.js')(app, examModel);
 
 
 // Run
-var server = app.listen(22047, function(){
+var server = app.listen(process.env.PORT, function(){
     console.log("Express server has started on port " + port)
 });
