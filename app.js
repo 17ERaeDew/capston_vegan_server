@@ -6,14 +6,14 @@ var mongoose    = require('mongoose');
 var path        = require('path');
 
 // MongoDB
-var db = mongoose.connection;
-db.on('error', console.error);
-db.once('open', function(){
-    // CONNECTED TO MONGODB SERVER
-    console.log("Connected to mongod server");
-});
+// var db = mongoose.connection;
+// db.on('error', console.error);
+// db.once('open', function(){
+//     // CONNECTED TO MONGODB SERVER
+//     console.log("Connected to mongod server");
+// });
 
-mongoose.connect('mongodb://localhost/mongo_exam', {useNewUrlParser: true});
+// mongoose.connect('mongodb://localhost/mongo_exam', {useNewUrlParser: true});
 
 // Model
 var examModel = require('./models/exam');
@@ -35,6 +35,6 @@ require('./routes/delete.js')(app, examModel);
 
 
 // Run
-var server = app.listen(8080, function(){
+var server = app.listen(22047, function(){
     console.log("Express server has started on port " + port)
 });
