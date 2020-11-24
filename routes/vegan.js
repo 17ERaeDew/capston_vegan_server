@@ -18,20 +18,15 @@ function foodDB(res, name){
   });
 }
 
-function foodlist(){
+function foodlist(res, name){
   // https://www.foodsafetykorea.go.kr/api/openApiInfo.do?menu_grp=MENU_GRP31&menu_no=661&show_cnt=10&start_idx=1&svc_no=C002
-  const serviceKey = ''; // 아직 허가 안남
-  const prd = '초코파이';
-  var url = `http://openapi.foodsafetykorea.go.kr/api/${serviceKey}/C002/JSON/1/5/PRDLST_NM=${prd}`;
+  const serviceKey = 'dba8a479b09b4c1cbb36'; // 아직 허가 안남
+  var url = `http://openapi.foodsafetykorea.go.kr/api/${serviceKey}/C002/JSON/1/5/PRDLST_NM=${encodeURI(name)}`;
   request({
       url: url,
       method: 'GET'
   }, function (error, response, body) {
-      console.log(response.data);
-      //console.log('Status', response.statusCode);
-      //console.log('Headers', JSON.stringify(response.headers));
-      console.log('Reponse received', body);
-      return {error: error, response: response, body: body};
+      return res.json({error: error, response: response, body: body});
   });
 }
 
@@ -53,7 +48,7 @@ function HACCP(res, name){
 router.use('/sendText', (req, res) => {
   const { text, vegan } = req.body;//배열로 넘어옴
   console.log('sendText success');
-  HACCP(res, text);
+  foodlist(res, text);
   // foodDB(res, 'Abiu열매');
 });
 
