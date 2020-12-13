@@ -1,53 +1,74 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var axios = require('axios');
-var request = require('request');
+var axios = require("axios");
+var request = require("request");
 
-
-function foodDB(res, name){
-  const serviceKey = "pK02eCTJZvQmKmwKtQjIX1QHHHYNVJe07zo3zqeo3QLUb2u0uMxUZmZN%2BHF9jgWyuwy7HWVUeRwpXkRanDCDzw%3D%3D";
+function foodDB(res, name) {
+  const serviceKey =
+    "pK02eCTJZvQmKmwKtQjIX1QHHHYNVJe07zo3zqeo3QLUb2u0uMxUZmZN%2BHF9jgWyuwy7HWVUeRwpXkRanDCDzw%3D%3D";
   // https://www.data.go.kr/data/15058665/openapi.do
-  var url = 'http://apis.data.go.kr/1470000/FoodRwmatrInfoService/getFoodRwmatrList';
-  var queryParams = '?' + encodeURIComponent('ServiceKey') + `=${serviceKey}`;
-  queryParams += '&' + encodeURIComponent('rprsnt_rawmtrl_nm') + '=' + encodeURIComponent(name);
-  request({
+  var url =
+    "http://apis.data.go.kr/1470000/FoodRwmatrInfoService/getFoodRwmatrList";
+  var queryParams = "?" + encodeURIComponent("ServiceKey") + `=${serviceKey}`;
+  queryParams +=
+    "&" +
+    encodeURIComponent("rprsnt_rawmtrl_nm") +
+    "=" +
+    encodeURIComponent(name);
+  request(
+    {
       url: url + queryParams,
-      method: 'GET'
-  }, function (error, response, body) {
-    return res.json({error: error, response: response, body: body});
-  });
+      method: "GET",
+    },
+    function (error, response, body) {
+      return res.json({ error: error, response: response, body: body });
+    },
+  );
 }
 
-function foodlist(res, name){
+function foodlist(res, name) {
   // https://www.foodsafetykorea.go.kr/api/openApiInfo.do?menu_grp=MENU_GRP31&menu_no=661&show_cnt=10&start_idx=1&svc_no=C002
-  const serviceKey = 'dba8a479b09b4c1cbb36'; // 아직 허가 안남
-  var url = `http://openapi.foodsafetykorea.go.kr/api/${serviceKey}/C002/JSON/1/5/PRDLST_NM=${encodeURI(name)}`;
-  request({
+  const serviceKey = "dba8a479b09b4c1cbb36"; // 아직 허가 안남
+  var url = `http://openapi.foodsafetykorea.go.kr/api/${serviceKey}/C002/JSON/1/5/PRDLST_NM=${encodeURI(
+    name,
+  )}`;
+  request(
+    {
       url: url,
-      method: 'GET'
-  }, function (error, response, body) {
-      return res.json({error: error, response: response, body: body});
-  });
+      method: "GET",
+    },
+    function (error, response, body) {
+      console.log(body);
+      return res.json({ error: error, response: response, body: body });
+    },
+  );
 }
 
-function HACCP(res, name){
-  const serviceKey = "pK02eCTJZvQmKmwKtQjIX1QHHHYNVJe07zo3zqeo3QLUb2u0uMxUZmZN%2BHF9jgWyuwy7HWVUeRwpXkRanDCDzw%3D%3D";
+function HACCP(res, name) {
+  const serviceKey =
+    "pK02eCTJZvQmKmwKtQjIX1QHHHYNVJe07zo3zqeo3QLUb2u0uMxUZmZN%2BHF9jgWyuwy7HWVUeRwpXkRanDCDzw%3D%3D";
   // https://www.data.go.kr/data/15058665/openapi.do
-  var url = 'http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService';
-  var queryParams = '?' + encodeURIComponent('ServiceKey') + `=${serviceKey}`;
-  queryParams += '&' + encodeURIComponent('prdlstNm') + '=' + encodeURIComponent(name);
-  queryParams += '&' + encodeURIComponent('returnType') + '=' + encodeURIComponent('json');
-  request({
+  var url =
+    "http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService";
+  var queryParams = "?" + encodeURIComponent("ServiceKey") + `=${serviceKey}`;
+  queryParams +=
+    "&" + encodeURIComponent("prdlstNm") + "=" + encodeURIComponent(name);
+  queryParams +=
+    "&" + encodeURIComponent("returnType") + "=" + encodeURIComponent("json");
+  request(
+    {
       url: url + queryParams,
-      method: 'GET'
-  }, function (error, response, body) {
-      return res.json({error: error, response: response, body: body});
-  });
+      method: "GET",
+    },
+    function (error, response, body) {
+      return res.json({ error: error, response: response, body: body });
+    },
+  );
 }
 
-router.use('/sendText', (req, res) => {
-  const { text, vegan } = req.body;//배열로 넘어옴
-  console.log('sendText success');
+router.use("/sendText", (req, res) => {
+  const { text, vegan } = req.body; //배열로 넘어옴
+  console.log("sendText success");
   foodlist(res, text);
   // foodDB(res, 'Abiu열매');
 });
