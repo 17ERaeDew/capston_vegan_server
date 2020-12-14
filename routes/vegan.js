@@ -156,39 +156,39 @@ router.use("/sendText", async (req, res) => {
     whichVegan = 0;
     forVegan = "플렉시테리언"; //에게 적합한 식품
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({ vegan: false, substitue: res_haccp });
+    return res.json({ vegan: false, substitution: res_haccp });
   } else if (words.indexOf("닭고기") != -1) {
     whichVegan = 1;
     forVegan = "폴로 베지테리언";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({ vegan: false, substitue: res_haccp });
+    return res.json({ vegan: false, substitution: res_haccp });
   } else if (seafood == 1 || words.indexOf("어육") != -1) {
     whichVegan = 2;
     forVegan = "페스코 베지테리언";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({ vegan: false, substitue: res_haccp });
+    return res.json({ vegan: false, substitution: res_haccp });
   } else if (words.indexOf("계란") != -1) {
     if (words.indexOf("우유") != -1) {
       whichVegan = 3;
       forVegan = "락토오보 베지테리언";
       const res_haccp = await HACCP(res, rcmdFood);
-      return res.json({ vegan: false, substitue: res_haccp });
+      return res.json({ vegan: false, substitution: res_haccp });
     } else {
       whichVegan = 4;
       forVegan = "오보 베지테리언";
       const res_haccp = await HACCP(res, rcmdFood);
-      return res.json({ vegan: false, substitue: res_haccp });
+      return res.json({ vegan: false, substitution: res_haccp });
     }
   } else if (words.indexOf("우유") != -1) {
     whichVegan = 5;
     forVegan = "락토 베지테리언";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({ vegan: false, substitue: res_haccp });
+    return res.json({ vegan: false, substitution: res_haccp });
   } else {
     whichVegan = 6;
     forVegan = "비건";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({ vegan: false, substitue: res_haccp });
+    return res.json({ vegan: false, substitution: res_haccp });
   }
   //return res.json(whichVegan);
 });
