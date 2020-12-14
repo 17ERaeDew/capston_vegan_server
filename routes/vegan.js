@@ -247,7 +247,6 @@ router.use("/sendText", async (req, res) => {
     }
   } else if (vegan_text.indexOf("우유") != -1) {
     whichVegan = 5;
-    r;
     if (cmpVegan <= whichVegan) matching = true;
     //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,락토 베지테리언";
     else matching = false; //forVegan = "락토 베지테리언";
