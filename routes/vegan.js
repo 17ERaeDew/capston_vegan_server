@@ -116,22 +116,25 @@ router.use("/sendText", async (req, res) => {
   console.log("sendText success");
   var vegan_text = text; // string text
   var a = text;
+
   var words = a.split(","); // 넘어온 텍스트 반점(,) 기준으로 나눠서 저장
-  var findName = "제품명";
   var findString = "식품유형";
   var findString2 = "식품의유형";
   var rcmd = a.split(" "); // 대체식품 추천을 위해 필요
-  var rcmdName;
   var rcmdFood;
+  var matching = false;
+  var rcmdName;
   var notforVegan;
+
   // 넘어온 성분들 다 검색
   var size = words.length; // 배열 크기
   var i = 0;
   var j = 0;
   var k = 0;
   //var whichVegan = 0; // 0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
-  witchVegan = vegan;
-  var forVegan = " ";
+  cmpVegan = vegan;
+  var forVegan = " ";  
+  var notforVegan = " ";
   vegan_text.replace(/(\s*)/g, "");
 
   while (i < size) {
@@ -150,6 +153,7 @@ router.use("/sendText", async (req, res) => {
   while (1) {
     if (rcmd[k] == findString) {
       rcmdFood = rcmd[k + 1];
+
       break;
     }
     if (rcmd[k] == findString2) {
@@ -158,6 +162,7 @@ router.use("/sendText", async (req, res) => {
     }
     k++;
   }
+
   rcmdName = rcmd[1];
 
   rcmdFood = rcmdFood.replace("류", "");
@@ -165,95 +170,80 @@ router.use("/sendText", async (req, res) => {
   console.log(rcmdName);
   console.log(rcmdFood);
   // 채식주의자 단계 판단  0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
-  if (
-    vegan_text.indexOf("돼지고기") != -1 ||
-    vegan_text.indexOf("쇠고기") != -1
-  ) {
+  if (words.indexOf("돼지고기") != -1 || words.indexOf("쇠고기") != -1) { 
     whichVegan = 0;
+    if(cmpVegan = whichVegan)
+        matching = true;
+    else
+        matching = false;
     forVegan = "플렉시테리언"; //에게 적합한 식품
     notforVegan = "";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({
-      vegan: false,
-      substitution: res_haccp,
-      title: rcmdName,
-      type: rcmdFood,
-      not_match: notforVegan,
-    });
-  } else if (vegan_text.indexOf("닭고기") != -1) {
+    return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+  } else if (words.indexOf("닭고기") != -1) {
     whichVegan = 1;
-    forVegan = "폴로 베지테리언";
+    if(cmpVegan <= whichVegan)
+        matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언";
+    else
+        matching = false; //forVegan = "폴로 베지테리언";
     notforVegan = "돼지고기,쇠고기";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({
-      vegan: false,
-      substitution: res_haccp,
-      title: rcmdName,
-      type: rcmdFood,
-      not_match: notforVegan,
-    });
-  } else if (seafood == 1 || vegan_text.indexOf("어육") != -1) {
+    return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+  } else if (seafood == 1 || words.indexOf("어육") != -1) {
     whichVegan = 2;
-    forVegan = "페스코 베지테리언";
+    if(cmpVegan <= whichVegan)
+        matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언";
+    else
+        matching = false;//forVegan = "페스코 베지테리언";  
+    //forVegan = "페스코 베지테리언";
     notforVegan = "돼지고기,쇠고기,닭고기";
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({
-      vegan: false,
-      substitution: res_haccp,
-      title: rcmdName,
-      type: rcmdFood,
-      not_match: notforVegan,
-    });
-  } else if (vegan_text.indexOf("계란") != -1) {
-    if (vegan_text.indexOf("우유") != -1) {
+    return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+  } else if (words.indexOf("계란") != -1) {
+    if (words.indexOf("우유") != -1) {
       whichVegan = 3;
-      forVegan = "락토오보 베지테리언";
-      notforVegan = "돼지고기,쇠고기,닭고기,어육";
+      if(cmpVegan <= whichVegan)
+        matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언";
+      else
+        matching = false; //forVegan = "락토오보 베지테리언";      
+      //forVegan = "락토오보 베지테리언";
+      notforVegan = "돼지고기,쇠고기,닭고기,어육";     
       const res_haccp = await HACCP(res, rcmdFood);
-      return res.json({
-        vegan: false,
-        substitution: res_haccp,
-        title: rcmdName,
-        type: rcmdFood,
-        not_match: notforVegan,
-      });
+      return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
     } else {
       whichVegan = 4;
-      forVegan = "오보 베지테리언";
-      notforVegan = "돼지고기,쇠고기,닭고기,어육,우유";
+      if(cmpVegan <= whichVegan)
+        matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,오보 베지테리언";
+      else
+        matching = false; //forVegan = "오보 베지테리언";      
+      //forVegan = "오보 베지테리언";
+      notforVegan = "돼지고기,쇠고기,닭고기,어육,우유";    
       const res_haccp = await HACCP(res, rcmdFood);
-      return res.json({
-        vegan: false,
-        substitution: res_haccp,
-        title: rcmdName,
-        type: rcmdFood,
-        not_match: notforVegan,
-      });
+      return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+
     }
   } else if (vegan_text.indexOf("우유") != -1) {
     whichVegan = 5;
-    forVegan = "락토 베지테리언";
-    notforVegan = "돼지고기,쇠고기,닭고기,어육,계란";
+r
+    if(cmpVegan <= whichVegan)
+        matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,락토 베지테리언";
+      else
+        matching = false; //forVegan = "락토 베지테리언"; 
+    //forVegan = "락토 베지테리언";
+    notforVegan = "돼지고기,쇠고기,닭고기,어육,계란";  
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({
-      vegan: false,
-      substitution: res_haccp,
-      title: rcmdName,
-      type: rcmdFood,
-      not_match: notforVegan,
-    });
+    return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
   } else {
     whichVegan = 6;
-    forVegan = "비건";
-    notforVegan = "돼지고기,쇠고기,닭고기,어육,계란,우유";
+    if(cmpVegan <= whichVegan)
+        matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,락토 베지테리언,비건";
+      else
+        matching = false; //forVegan = "비건"; 
+    //forVegan = "비건";
+    notforVegan = "돼지고기,쇠고기,닭고기,어육,계란,우유";    
     const res_haccp = await HACCP(res, rcmdFood);
-    return res.json({
-      vegan: false,
-      substitution: res_haccp,
-      title: rcmdName,
-      type: rcmdFood,
-      not_match: notforVegan,
-    });
+    return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+
   }
   //return res.json(whichVegan);
 });
