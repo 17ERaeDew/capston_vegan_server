@@ -90,7 +90,7 @@ async function HACCP(res, name) {
   queryParams +=
     "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("3");
   console.log("HACCP");
-
+  console.log(url + queryParams);
   try {
     data = await doRequest({ url: url + queryParams });
   } catch (err) {
@@ -98,6 +98,7 @@ async function HACCP(res, name) {
   }
   let array = [];
   $ = cheerio.load(data);
+
   $("item").each((idx, ele) => {
     let na = $(ele).find("prdlstNm").text(); //대체식품명
     let no1 = $(ele).find("rawmtrl").text(); //대체식품 원재료
@@ -113,14 +114,17 @@ async function HACCP(res, name) {
 router.use("/sendText", async (req, res) => {
   const { text, vegan } = req.body; //배열로 넘어옴
   console.log("sendText success");
-
+  var vegan_text = text; // string text
   var a = text;
-    //"제품명 치즈초코파이 식품유형 초콜릿 내용량 384g 업소명 및 소재지 롯데제과(주) 경남 양산시 양산대로 1158 유통기한 측면표기일까지(연.월.일) 내포장재질 폴리프로필렌 품목보고번호 19780614009442 밀가루(밀;미국산),탕,물엿,쇼트닝(가공유지(부분경화유;팜스터아린유(말레이시아산),동물성유지(호주산)),식물성지(부분경화유(말레이시아산); 원재료명 팜유,팜핵유),혼합분유,코코아분말(인도네시0산),D-소비톨액,글리서린,체다치즈분말(덴마크산),주정0.63%,유당,기타가공품,포도당,젤라틴,전란액,정제소금,산도조절제I,합성향료(치즈형,밀크향,바닐라향),산도절제Ⅱ,구연산,코코아마스(코코아빈;가나산),유화제I,신도조절제II,홍화황색소,유화제II,혼합제제(유화제,아라비아검,산도조절제),바닐린,잔탄검밀,쇠고기,대두,우유,돼지고기,계란 함유";
+
   var words = a.split(","); // 넘어온 텍스트 반점(,) 기준으로 나눠서 저장
   var findString = "식품유형";
+  var findString2 = "식품의유형";
   var rcmd = a.split(" "); // 대체식품 추천을 위해 필요
   var rcmdFood;
   var matching = false;
+  var rcmdName;
+  var notforVegan;
 
   // 넘어온 성분들 다 검색
   var size = words.length; // 배열 크기
@@ -131,7 +135,8 @@ router.use("/sendText", async (req, res) => {
   cmpVegan = vegan;
   var forVegan = " ";  
   var notforVegan = " ";
-       
+  vegan_text.replace(/(\s*)/g, "");
+
   while (i < size) {
     if (j == size - 1)
       // '함유' 제거하고 검색하기 위함
@@ -151,17 +156,28 @@ router.use("/sendText", async (req, res) => {
 
       break;
     }
+    if (rcmd[k] == findString2) {
+      rcmdFood = rcmd[k + 1];
+      break;
+    }
     k++;
   }
+
+  rcmdName = rcmd[1];
+
+  rcmdFood = rcmdFood.replace("류", "");
+  rcmdFood = rcmdFood.replace("가공품", "");
+  console.log(rcmdName);
+  console.log(rcmdFood);
   // 채식주의자 단계 판단  0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
-  if (words.indexOf("돼지고기") != -1 || words.indexOf("쇠고기") != -1) { // 돼지고기나 쇠고기가 있으면
+  if (words.indexOf("돼지고기") != -1 || words.indexOf("쇠고기") != -1) { 
     whichVegan = 0;
     if(cmpVegan = whichVegan)
         matching = true;
     else
         matching = false;
     forVegan = "플렉시테리언"; //에게 적합한 식품
-    notforVegan = ""  
+    notforVegan = "";
     const res_haccp = await HACCP(res, rcmdFood);
     return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
   } else if (words.indexOf("닭고기") != -1) {
@@ -204,9 +220,11 @@ router.use("/sendText", async (req, res) => {
       notforVegan = "돼지고기,쇠고기,닭고기,어육,우유";    
       const res_haccp = await HACCP(res, rcmdFood);
       return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+
     }
-  } else if (words.indexOf("우유") != -1) {
+  } else if (vegan_text.indexOf("우유") != -1) {
     whichVegan = 5;
+r
     if(cmpVegan <= whichVegan)
         matching = true; //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,락토 베지테리언";
       else
@@ -225,6 +243,7 @@ router.use("/sendText", async (req, res) => {
     notforVegan = "돼지고기,쇠고기,닭고기,어육,계란,우유";    
     const res_haccp = await HACCP(res, rcmdFood);
     return res.json({ vegan: matching, substitution: res_haccp, not_match: notforVegan });
+
   }
   //return res.json(whichVegan);
 });
