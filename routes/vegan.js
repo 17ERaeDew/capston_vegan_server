@@ -146,7 +146,6 @@ router.use("/sendText", async (req, res) => {
   while (1) {
     if (rcmd[k] == findString) {
       rcmdFood = rcmd[k + 1];
-
       break;
     }
     k++;
