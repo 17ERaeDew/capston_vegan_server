@@ -174,20 +174,15 @@ router.use("/sendText", async (req, res) => {
   console.log(rcmdName);
   console.log(rcmdFood);
   // 채식주의자 단계 판단  0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
-  if (
-    vegan_text.indexOf("돼지고기") != -1 ||
-    vegan_text.indexOf("쇠고기") != -1
-  ) {
-    console.log(forVegan);
-    console.log(vegan_text.indexOf("돼지고기"));
-    console.log(vegan_text.indexOf("쇠고기"));
+   if (vegan_text.indexOf("돼지고기") != -1 || vegan_text.indexOf("쇠고기") != -1) {
+
     whichVegan = 0;
     if (cmpVegan == whichVegan) matching = true;
     else matching = false;
     forVegan = "플렉시테리언"; //에게 적합한 식품
     notforVegan = "";
-    const res_haccp = await HACCP(res, rcmdFood);
-    console.log(forVegan);
+    const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천 (플렉시이므로 필터링 필요 X)      
+    // 대체식품 필터링
 
     return res.json({
       vegan: matching,
@@ -199,16 +194,19 @@ router.use("/sendText", async (req, res) => {
   } else if (vegan_text.indexOf("닭고기") != -1) {
     whichVegan = 1;
     if (cmpVegan <= whichVegan) matching = true;
+    //forVegan = "플렉시테리언, 폴로 베지테리언";
     else matching = false; //forVegan = "폴로 베지테리언";
-    forVegan = "플렉시테리언, 폴로 베지테리언";
-
     notforVegan = "돼지고기,쇠고기";
-    const res_haccp = await HACCP(res, rcmdFood);
-    console.log(forVegan);
-
+    const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천
+    // 대체식품 필터링
+    var tmp_array = res_haccp.filter((value, index)=>{
+        if(value.naturalName.indexOf("돼지고기") != -1 || value.naturalName.indexOf("쇠고기")  != -1) ;
+        else return value;    
+    }); 
     return res.json({
       vegan: matching,
-      substitution: res_haccp,
+      substitution: tmp_array,
+
       not_match: notforVegan,
       title: rcmdName,
       type: rcmdFood,
@@ -218,67 +216,83 @@ router.use("/sendText", async (req, res) => {
     if (cmpVegan <= whichVegan) matching = true;
     //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언";
     else matching = false; //forVegan = "페스코 베지테리언";
-    forVegan = "페스코 베지테리언";
+    //forVegan = "페스코 베지테리언";
     notforVegan = "돼지고기,쇠고기,닭고기";
-    const res_haccp = await HACCP(res, rcmdFood);
-    console.log(forVegan);
-
+    const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천
+    // 대체식품 필터링
+    var tmp_array = res_haccp.filter((value, index)=>{
+        if(value.naturalName.indexOf("돼지고기") != -1 || value.naturalName.indexOf("쇠고기")  != -1 || value.naturalName.indexOf("닭고기")  != -1) ;
+        else return value;       
+        }); 
     return res.json({
       vegan: matching,
-      substitution: res_haccp,
+      substitution: tmp_array,
+
       not_match: notforVegan,
       title: rcmdName,
       type: rcmdFood,
     });
   } else if (vegan_text.indexOf("계란") != -1) {
-    if (vegan_text.indexOf("우유") != -1) {
+    if (words.indexOf("우유") != -1) {
       whichVegan = 3;
       if (cmpVegan <= whichVegan) matching = true;
       //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언";
       else matching = false; //forVegan = "락토오보 베지테리언";
-      forVegan = "락토오보 베지테리언";
+      //forVegan = "락토오보 베지테리언";
       notforVegan = "돼지고기,쇠고기,닭고기,어육";
-      const res_haccp = await HACCP(res, rcmdFood);
-      console.log(forVegan);
+      const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천
+     // 대체식품 필터링
+     var tmp_array = res_haccp.filter((value, index)=>{
+        if(value.naturalName.indexOf("돼지고기") != -1 || value.naturalName.indexOf("쇠고기")  != -1 || value.naturalName.indexOf("닭고기")  != -1) ;
+        else return value;     
+        });  
+    return res.json({
+      vegan: matching,
+      substitution: tmp_array,
+      not_match: notforVegan,
+      title: rcmdName,
+      type: rcmdFood,
+    });
 
-      return res.json({
-        vegan: matching,
-        substitution: res_haccp,
-        not_match: notforVegan,
-        title: rcmdName,
-        type: rcmdFood,
-      });
     } else {
       whichVegan = 4;
       if (cmpVegan <= whichVegan) matching = true;
       //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,오보 베지테리언";
       else matching = false; //forVegan = "오보 베지테리언";
-      forVegan = "오보 베지테리언";
+      //forVegan = "오보 베지테리언";
       notforVegan = "돼지고기,쇠고기,닭고기,어육,우유";
-      const res_haccp = await HACCP(res, rcmdFood);
-      console.log(forVegan);
-
-      return res.json({
-        vegan: matching,
-        substitution: res_haccp,
-        not_match: notforVegan,
-        title: rcmdName,
-        type: rcmdFood,
-      });
+      const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천
+      // 대체식품 필터링
+        console.log("락토");
+    var tmp_array = res_haccp.filter((value, index)=>{
+        if(value.naturalName.indexOf("돼지고기") != -1 || value.naturalName.indexOf("쇠고기")  != -1 || value.naturalName.indexOf("닭고기")  != -1 || value.naturalName.indexOf("어육") != -1 || value.naturalName.indexOf("우유") != -1) ;
+        else return value;      
+        });
+    return res.json({
+      vegan: matching,
+      substitution: tmp_array,
+      not_match: notforVegan,
+      title: rcmdName,
+      type: rcmdFood,
+    });
     }
   } else if (vegan_text.indexOf("우유") != -1) {
     whichVegan = 5;
+    //r;
     if (cmpVegan <= whichVegan) matching = true;
     //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,락토 베지테리언";
     else matching = false; //forVegan = "락토 베지테리언";
-    forVegan = "락토 베지테리언";
+    //forVegan = "락토 베지테리언";
     notforVegan = "돼지고기,쇠고기,닭고기,어육,계란";
-    const res_haccp = await HACCP(res, rcmdFood);
-    console.log(forVegan);
-
+    const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천
+      // 대체식품 필터링
+    var tmp_array = res_haccp.filter((value, index)=>{
+        if(value.naturalName.indexOf("돼지고기") != -1 || value.naturalName.indexOf("쇠고기")  != -1 || value.naturalName.indexOf("닭고기")  != -1 || value.naturalName.indexOf("어육") != -1 || value.naturalName.indexOf("계란") != -1) ;
+        else return value;    
+    });
     return res.json({
       vegan: matching,
-      substitution: res_haccp,
+      substitution: tmp_array,
       not_match: notforVegan,
       title: rcmdName,
       type: rcmdFood,
@@ -288,20 +302,22 @@ router.use("/sendText", async (req, res) => {
     if (cmpVegan <= whichVegan) matching = true;
     //forVegan = "플렉시테리언, 폴로 베지테리언, 페스코 베지테리언,락토오보 베지테리언,락토 베지테리언,비건";
     else matching = false; //forVegan = "비건";
-    forVegan = "비건";
+    //forVegan = "비건";
     notforVegan = "돼지고기,쇠고기,닭고기,어육,계란,우유";
-    const res_haccp = await HACCP(res, rcmdFood);
-    console.log(forVegan);
+    const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천
+    // 대체식품 필터링;
+    var tmp_array = res_haccp.filter((value, index)=>{
+        if(value.naturalName.indexOf("돼지고기") != -1 || value.naturalName.indexOf("쇠고기")  != -1 || value.naturalName.indexOf("닭고기")  != -1 || value.naturalName.indexOf("어육") != -1 || value.naturalName.indexOf("계란") != -1 || value.naturalName.indexOf("우유") != -1) ;
+        else return value;        
+    });
 
     return res.json({
       vegan: matching,
-      substitution: res_haccp,
+      substitution: tmp_array,
       not_match: notforVegan,
       title: rcmdName,
       type: rcmdFood,
     });
   }
-  //return res.json(whichVegan);
-});
 
 module.exports = router;
