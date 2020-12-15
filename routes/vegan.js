@@ -88,7 +88,7 @@ async function HACCP(res, name) {
   queryParams +=
     "&" + encodeURIComponent("returnType") + "=" + encodeURIComponent("xml");
   queryParams +=
-    "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("10");
+    "&" + encodeURIComponent("numOfRows") + "=" + encodeURIComponent("6");
   console.log("HACCP");
   console.log(url + queryParams);
   try {
@@ -105,17 +105,16 @@ async function HACCP(res, name) {
     let no2 = $(ele).find("prdkind").text(); //대체식품 유형
     let no3 = $(ele).find("imgurl1").text(); //대체식품 이미지
     // console.log(`제품명: ${na}\n 원재료: ${no1}\n유형: ${no2}\n, 사진: ${no3}`);
-    array[idx] = { title: na, naturalName: no1, type: no2, cover: no3 };
-  });      
-    console.log(array);
 
+    array[idx] = { title: na, naturalName: no1, type: no2, cover: no3 };
+  });
   return array;
 }
 
 router.use("/sendText", async (req, res) => {
   const { text, vegan } = req.body; //배열로 넘어옴
   console.log("sendText success");
-  var vegan_text =text; // string text
+  var vegan_text = text; // string text
   var a = text;
   var words = a.split(","); // 넘어온 텍스트 반점(,) 기준으로 나눠서 저장
   var findName = "제품명";
@@ -133,7 +132,7 @@ router.use("/sendText", async (req, res) => {
   var j = 0;
   var k = 0;
   //var whichVegan = 0; // 0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
-  cmpVegan = vegan;
+  var cmpVegan = vegan;
   var forVegan = " ";
   var notforVegan = " ";
   vegan_text.replace(/(\s*)/g, "");
@@ -151,27 +150,31 @@ router.use("/sendText", async (req, res) => {
     j++;
     i++;
   }
-  while (1) {
-    if (rcmd[k] == findString) {
-      rcmdFood = rcmd[k + 1];
 
-      break;
+  rcmd.forEach((value, index) => {
+    if (value == "식품유형") {
+      rcmdFood = rcmd[index + 1];
+      return;
     }
-    if (rcmd[k] == findString2) {
-      rcmdFood = rcmd[k + 1];
-      break;
+    if (value == "식품의유형") {
+      rcmdFood = rcmd[index + 1];
+      return;
     }
-    k++;
-  }
+  });
+  rcmd.forEach((value, index) => {
+    if (value == "제품명") {
+      rcmdName = rcmd[index + 1];
+      return;
+    }
+  });
 
-  rcmdName = rcmd[1];
   rcmdFood = rcmdFood.replace("류", "");
   rcmdFood = rcmdFood.replace("가공품", "");
 
   console.log(rcmdName);
   console.log(rcmdFood);
   // 채식주의자 단계 판단  0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
-  if (vegan_text.indexOf("돼지고기") != -1 || vegan_text.indexOf("쇠고기") != -1) {
+   if (vegan_text.indexOf("돼지고기") != -1 || vegan_text.indexOf("쇠고기") != -1) {
     whichVegan = 0;
     if (cmpVegan == whichVegan) matching = true;
     else matching = false;
@@ -311,7 +314,5 @@ router.use("/sendText", async (req, res) => {
       type: rcmdFood,
     });
   }
-  //return res.json(whichVegan);
-});
 
 module.exports = router;
