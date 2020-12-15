@@ -175,6 +175,7 @@ router.use("/sendText", async (req, res) => {
   console.log(rcmdFood);
   // 채식주의자 단계 판단  0= 플렉시테리언 / 1=폴로/2=페스코/3=락토오보/4=오보/5=락토/6=비건(풀만 먹는 사람)
    if (vegan_text.indexOf("돼지고기") != -1 || vegan_text.indexOf("쇠고기") != -1) {
+
     whichVegan = 0;
     if (cmpVegan == whichVegan) matching = true;
     else matching = false;
@@ -182,6 +183,7 @@ router.use("/sendText", async (req, res) => {
     notforVegan = "";
     const res_haccp = await HACCP(res, rcmdFood); //대체식품 추천 (플렉시이므로 필터링 필요 X)      
     // 대체식품 필터링
+
     return res.json({
       vegan: matching,
       substitution: res_haccp,
@@ -204,6 +206,7 @@ router.use("/sendText", async (req, res) => {
     return res.json({
       vegan: matching,
       substitution: tmp_array,
+
       not_match: notforVegan,
       title: rcmdName,
       type: rcmdFood,
@@ -224,6 +227,7 @@ router.use("/sendText", async (req, res) => {
     return res.json({
       vegan: matching,
       substitution: tmp_array,
+
       not_match: notforVegan,
       title: rcmdName,
       type: rcmdFood,
@@ -249,6 +253,7 @@ router.use("/sendText", async (req, res) => {
       title: rcmdName,
       type: rcmdFood,
     });
+
     } else {
       whichVegan = 4;
       if (cmpVegan <= whichVegan) matching = true;
