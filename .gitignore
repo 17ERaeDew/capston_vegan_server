@@ -40,4 +40,6 @@ $RECYCLE.BIN/
 node_modules
 dist/*
 *.log
+.env
+.env.dev
 # End of https://www.toptal.com/developers/gitignore/api/windows,vscode
