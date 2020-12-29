@@ -9,6 +9,8 @@
 채식주의자를 위한 가공 식품 원재료 분석
 어플리케이션 개발 서버
 
+### [어플리케이션 github](https://github.com/osydoo/capston_vegan)
+
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mui-org/material-ui/blob/master/LICENSE)
 </div>
 
